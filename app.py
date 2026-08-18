@@ -24,77 +24,272 @@ NUM_COLS = ["TransactionAmount", "CustomerAge", "TransactionDuration", "LoginAtt
 CAT_COLS = ["TransactionType", "Location", "Channel", "CustomerOccupation"]
 
 # ========== TOKEN DESAIN ==========
-# Tema "ledger" (buku besar bank): navy gelap + satu aksen teal, angka pakai
-# font mono biar berasa kayak layar mesin ATM/terminal transaksi -- bukan
-# dashboard generik warna-warni.
-INK = "#0B1220"
-SURFACE = "#141F35"
-SURFACE_BORDER = "#26334D"
-TEXT = "#E8EDF4"
-TEXT_MUTED = "#8B96AC"
-ACCENT = "#4FD1C5"
-ACCENT_WARM = "#F2A65A"
-CATEGORY_COLORS = ["#4FD1C5", "#F2A65A", "#8C7CF0", "#F2789F", "#6FCF97", "#56A8E0", "#E0C56F", "#E07856"]
-
+# Tema "bank intelligence": deep navy sebagai fondasi, teal sebagai aksen
+# trust/financial-tech, emerald untuk kondisi positif, dan amber khusus
+# indikator finansial / saldo.
+INK = "#08111F"
+SURFACE = "#101C2E"
+SURFACE_2 = "#15243A"
+SURFACE_BORDER = "#273A56"
+TEXT = "#EAF2F8"
+TEXT_MUTED = "#94A6BD"
+TEAL = "#39D6C4"
+TEAL_SOFT = "#1C5960"
+EMERALD = "#57D38C"
+AMBER = "#F4B860"
+RED = "#FF6B6B"
+BLUE = "#5AA9FF"
+CATEGORY_COLORS = [TEAL, BLUE, AMBER, EMERALD, "#9B8AFB", "#F28BB2", "#7BC4A8", "#7EA7D8"]
 
 def inject_theme() -> None:
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap');
 
-        html, body, [class*="css"] {{ font-family: 'Inter', sans-serif; }}
-        .stApp {{ background-color: {INK}; color: {TEXT}; }}
+        html, body, [class*="css"] {{ font-family: 'DM Sans', sans-serif; }}
 
-        h1, h2, h3 {{ font-family: 'Space Grotesk', sans-serif !important; letter-spacing: -0.01em; }}
+        .stApp {{
+            background:
+                radial-gradient(circle at 100% 0%, rgba(57,214,196,0.08), transparent 28%),
+                radial-gradient(circle at 0% 100%, rgba(90,169,255,0.06), transparent 30%),
+                {INK};
+            color: {TEXT};
+        }}
+
+        h1, h2, h3 {{
+            font-family: 'Space Grotesk', sans-serif !important;
+            color: {TEXT} !important;
+            letter-spacing: -0.02em;
+        }}
+
+        .bank-eyebrow {{
+            color: {TEAL};
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }}
+
+        .bank-title {{
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.45rem;
+            line-height: 1.05;
+            font-weight: 700;
+            color: {TEXT};
+            margin: 0;
+        }}
+
+        .bank-subtitle {{
+            color: {TEXT_MUTED};
+            margin-top: 0.35rem;
+            font-size: 0.95rem;
+        }}
+
+        .bank-rule {{
+            height: 1px;
+            margin: 1rem 0 1.25rem 0;
+            background: linear-gradient(90deg, {TEAL}, rgba(57,214,196,0.08), transparent);
+        }}
 
         [data-testid="stMetricValue"] {{
             font-family: 'JetBrains Mono', monospace !important;
-            color: {ACCENT} !important;
+            color: {TEAL} !important;
             font-weight: 700 !important;
+            font-size: 1.55rem !important;
         }}
-        [data-testid="stMetricLabel"] {{ color: {TEXT_MUTED} !important; }}
+
+        [data-testid="stMetricLabel"] {{
+            color: {TEXT_MUTED} !important;
+            font-size: 0.77rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }}
+
+        [data-testid="stMetricDelta"] {{
+            font-family: 'JetBrains Mono', monospace !important;
+        }}
+
         div[data-testid="stMetric"] {{
-            background-color: {SURFACE};
+            background: linear-gradient(180deg, {SURFACE_2}, {SURFACE});
             border: 1px solid {SURFACE_BORDER};
-            border-top: 2px solid {ACCENT};
-            border-radius: 6px;
-            padding: 0.9rem 1rem 0.6rem 1rem;
+            border-top: 2px solid {TEAL};
+            border-radius: 12px;
+            padding: 0.95rem 1rem 0.7rem 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }}
+
+        div[data-testid="stMetric"]:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.24);
         }}
 
         [data-testid="stVerticalBlockBorderWrapper"] {{
-            background-color: {SURFACE};
+            background: linear-gradient(180deg, rgba(21,36,58,0.92), rgba(16,28,46,0.96));
             border-color: {SURFACE_BORDER} !important;
-            border-radius: 10px;
+            border-radius: 14px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.15);
         }}
 
-        .stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid {SURFACE_BORDER}; }}
-        .stTabs [data-baseweb="tab"] {{ color: {TEXT_MUTED}; font-family: 'Space Grotesk', sans-serif; }}
-        .stTabs [aria-selected="true"] {{ color: {ACCENT} !important; }}
+        .section-kicker {{
+            color: {TEAL};
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }}
 
-        .ledger-caption {{ color: {TEXT_MUTED}; font-size: 0.85rem; margin-top: -0.4rem; }}
-        section[data-testid="stSidebar"] {{ background-color: {SURFACE}; border-right: 1px solid {SURFACE_BORDER}; }}
+        .section-title {{
+            font-family: 'Space Grotesk', sans-serif;
+            color: {TEXT};
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }}
+
+        .ledger-caption {{
+            color: {TEXT_MUTED};
+            font-size: 0.82rem;
+            line-height: 1.55;
+            margin-top: -0.15rem;
+        }}
+
+        section[data-testid="stSidebar"] {{
+            background: linear-gradient(180deg, rgba(21,36,58,0.99), rgba(9,18,32,0.99));
+            border-right: 1px solid {SURFACE_BORDER};
+        }}
+
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3 {{
+            color: {TEXT} !important;
+        }}
+
+        .sidebar-bank-label {{
+            color: {TEAL};
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            border-bottom: 1px solid {SURFACE_BORDER};
+            padding-bottom: 0.55rem;
+            margin-bottom: 0.7rem;
+        }}
+
+        .kpi-accent {{
+            border-left: 3px solid {TEAL};
+            padding-left: 0.7rem;
+        }}
+
+        .status-card {{
+            background: rgba(57,214,196,0.07);
+            border: 1px solid rgba(57,214,196,0.24);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-top: 0.5rem;
+        }}
+
+        .status-label {{
+            font-family: 'JetBrains Mono', monospace;
+            color: {TEXT_MUTED};
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }}
+
+        .status-value {{
+            color: {EMERALD};
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }}
+
+        .prediction-card {{
+            background: linear-gradient(135deg, rgba(57,214,196,0.13), rgba(21,36,58,0.95));
+            border: 1px solid rgba(57,214,196,0.30);
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 0.8rem;
+        }}
+
+        .prediction-label {{
+            color: {TEXT_MUTED};
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.68rem;
+        }}
+
+        .prediction-value {{
+            font-family: 'Space Grotesk', sans-serif;
+            color: {TEXT};
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-top: 0.15rem;
+        }}
+
+        .prediction-value span {{ color: {TEAL}; }}
+
+        .stTabs [data-baseweb="tab-list"] {{
+            gap: 5px;
+            border-bottom: 1px solid {SURFACE_BORDER};
+            padding-bottom: 2px;
+        }}
+
+        .stTabs [data-baseweb="tab"] {{
+            color: {TEXT_MUTED};
+            font-family: 'Space Grotesk', sans-serif;
+            border-radius: 8px 8px 0 0;
+            padding: 0.55rem 0.9rem;
+        }}
+
+        .stTabs [data-baseweb="tab"]:hover {{ color: {TEXT}; }}
+
+        .stTabs [aria-selected="true"] {{
+            color: {TEAL} !important;
+            box-shadow: inset 0 -2px 0 {TEAL};
+            background: rgba(57,214,196,0.05);
+        }}
+
+        .stButton > button,
+        .stDownloadButton > button {{
+            border-radius: 9px;
+            border: 1px solid {SURFACE_BORDER};
+        }}
+
+        .stButton > button:hover,
+        .stDownloadButton > button:hover {{
+            border-color: {TEAL};
+            color: {TEAL};
+        }}
+
+        @media (prefers-reduced-motion: reduce) {{
+            *, *::before, *::after {{
+                animation: none !important;
+                transition: none !important;
+            }}
+        }}
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 
 def register_plotly_theme() -> None:
     template = go.layout.Template()
     template.layout = go.Layout(
         paper_bgcolor=SURFACE,
         plot_bgcolor=SURFACE,
-        font=dict(family="Inter, sans-serif", color=TEXT, size=13),
+        font=dict(family="DM Sans, sans-serif", color=TEXT, size=13),
         title_font=dict(family="Space Grotesk, sans-serif", color=TEXT, size=16),
         colorway=CATEGORY_COLORS,
         xaxis=dict(gridcolor=SURFACE_BORDER, zerolinecolor=SURFACE_BORDER, linecolor=SURFACE_BORDER),
         yaxis=dict(gridcolor=SURFACE_BORDER, zerolinecolor=SURFACE_BORDER, linecolor=SURFACE_BORDER),
-        legend=dict(bgcolor="rgba(0,0,0,0)"),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=TEXT_MUTED)),
         margin=dict(t=48, l=10, r=10, b=10),
     )
-    pio.templates["ledger"] = template
-    px.defaults.template = "ledger"
+    pio.templates["bank_intelligence"] = template
+    px.defaults.template = "bank_intelligence"
 
 
 # ========== DATA & MODEL (cached) ==========
@@ -199,9 +394,16 @@ st.set_page_config(page_title="Bank Analysis", page_icon="🏦", layout="wide")
 inject_theme()
 register_plotly_theme()
 
-st.title("🏦 Bank Transaction Analysis")
-st.caption("Segmentasi nasabah (K-Means) + prediksi target (Random Forest) dari data transaksi bank.")
-with st.expander("Tentang project ini"):
+st.markdown(
+    """
+    <div class="bank-eyebrow">BANKING ANALYTICS · TRANSACTION INTELLIGENCE</div>
+    <div class="bank-title">🏦 Bank Intelligence Dashboard</div>
+    <div class="bank-subtitle">Membaca pola transaksi, segmentasi nasabah, dan prediksi target dari data perbankan.</div>
+    <div class="bank-rule"></div>
+    """,
+    unsafe_allow_html=True,
+)
+with st.expander("Tentang dashboard ini"):
     st.markdown(
         """
         Alurnya dua tahap: **Clustering** dulu buat ngelompokin transaksi jadi beberapa
@@ -219,7 +421,7 @@ if not DATA_FILE.exists():
 df = load_data()
 
 with st.sidebar.form("filter_form"):
-    st.header("Filter")
+    st.markdown('<div class="sidebar-bank-label">Portfolio & Transaction Filter</div>', unsafe_allow_html=True)
     location_filter = st.multiselect(
         "Location", sorted(df["Location"].dropna().unique()),
         default=sorted(df["Location"].dropna().unique())[:8],
@@ -241,13 +443,18 @@ if "bank_filters" not in st.session_state or apply_filters:
 
 loc_f, chan_f, targ_f = st.session_state.bank_filters
 filtered = filter_data(df, list(loc_f), list(chan_f), list(targ_f))
-st.sidebar.caption(f"📌 {len(filtered):,} dari {len(df):,} baris cocok dengan filter ini.".replace(",", "."))
+st.sidebar.markdown(f'<div class="status-card"><div class="status-label">Filtered Transactions</div><div class="status-value">{len(filtered):,} / {len(df):,} rows</div></div>'.replace(",", "."), unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Rows", f"{len(filtered):,}".replace(",", "."), help="Jumlah baris transaksi setelah filter diterapkan.")
-col2.metric("Avg Amount", f"{filtered['TransactionAmount'].mean():.2f}" if not filtered.empty else "-", help="Rata-rata nominal transaksi.")
-col3.metric("Target Classes", f"{filtered['Target'].nunique()}", help="Jumlah kelas target unik pada data terfilter.")
-col4.metric("Top Channel", filtered["Channel"].mode().iat[0] if not filtered.empty else "-", help="Channel transaksi paling sering dipakai.")
+col1.metric("Transactions", f"{len(filtered):,}".replace(",", "."), help="Jumlah baris transaksi setelah filter diterapkan.")
+col2.metric("Avg. Transaction", f"{filtered['TransactionAmount'].mean():.2f}" if not filtered.empty else "-", help="Rata-rata nominal transaksi.")
+col3.metric("Target Segments", f"{filtered['Target'].nunique()}", help="Jumlah kelas target unik pada data terfilter.")
+col4.metric("Preferred Channel", filtered["Channel"].mode().iat[0] if not filtered.empty else "-", help="Channel transaksi paling sering dipakai.")
+
+st.markdown(
+    '<div class="ledger-caption kpi-accent">Dashboard context: transaksi · saldo rekening · perilaku login · channel · lokasi · target segment.</div>',
+    unsafe_allow_html=True,
+)
 
 tab_overview, tab_cluster, tab_model, tab_whatif, tab_data = st.tabs(
     ["📊 Overview", "🧩 Clustering", "🌲 Model", "🔮 What-if", "📄 Data"]
@@ -256,45 +463,47 @@ tab_overview, tab_cluster, tab_model, tab_whatif, tab_data = st.tabs(
 EMPTY_MSG = "Belum ada data yang cocok dengan filter ini. Coba longgarkan pilihan Location/Channel/Target di sidebar."
 
 with tab_overview:
+    st.markdown('<div class="section-kicker">Portfolio Overview</div><div class="section-title">Ringkasan aktivitas dan struktur data perbankan</div>', unsafe_allow_html=True)
     if filtered.empty:
         st.info(EMPTY_MSG)
     else:
         with st.container(border=True):
             left, right = st.columns(2)
             with left:
-                fig = px.histogram(filtered, x="TransactionAmount", nbins=40, title="Sebaran Transaction Amount")
+                fig = px.histogram(filtered, x="TransactionAmount", nbins=40, title="Transaction Value Distribution")
                 st.plotly_chart(fig, use_container_width=True)
             with right:
                 top_loc = filtered["Location"].value_counts().head(10).reset_index()
-                fig = px.bar(top_loc, x="count", y="Location", orientation="h", title="Top 10 Location")
+                fig = px.bar(top_loc, x="count", y="Location", orientation="h", title="Top 10 Branch / Location")
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
                 st.plotly_chart(fig, use_container_width=True)
 
         with st.container(border=True):
-            st.markdown("**Korelasi antar fitur numerik**")
+            st.markdown("**Financial & Behavioral Feature Correlation**")
             corr = filtered[NUM_COLS].corr().round(2)
-            fig = px.imshow(corr, text_auto=True, color_continuous_scale=["#141F35", ACCENT], aspect="auto")
+            fig = px.imshow(corr, text_auto=True, color_continuous_scale=["#141F35", TEAL], aspect="auto")
             fig.update_layout(coloraxis_showscale=False)
             st.plotly_chart(fig, use_container_width=True)
             st.markdown(
-                '<p class="ledger-caption">Semakin dekat ke 1 (terang), semakin kuat dua fitur ini bergerak bersamaan — berguna buat cek fitur mana yang redundan sebelum dipakai clustering/model.</p>',
+                '<p class="ledger-caption">Korelasi membantu membaca hubungan antara nilai transaksi, saldo rekening, usia nasabah, durasi transaksi, dan login attempt sebelum analitik lanjutan.</p>',
                 unsafe_allow_html=True,
             )
 
 with tab_cluster:
+    st.markdown('<div class="section-kicker">Customer Segmentation</div><div class="section-title">Segmentasi pola transaksi dengan K-Means</div>', unsafe_allow_html=True)
     if filtered.empty:
         st.info(EMPTY_MSG)
     else:
         with st.container(border=True):
-            k = st.slider("Jumlah cluster (k)", 2, 8, min(3, max(2, len(filtered) // 150)))
+            k = st.slider("Jumlah segmen (k)", 2, 8, min(3, max(2, len(filtered) // 150)))
             plot_df, sil, cluster_profile = run_clustering(filtered, k)
 
             m1, m2 = st.columns(2)
             if sil is not None:
                 m1.metric("Silhouette score", f"{sil:.3f}", help="Mendekati 1 = cluster terpisah rapi; mendekati 0 = tumpang tindih.")
-            m2.metric("Jumlah cluster", k)
+            m2.metric("Jumlah segmen", k)
 
-            fig = px.scatter(plot_df, x="x", y="y", color="cluster", title="Peta cluster (proyeksi PCA 2D)")
+            fig = px.scatter(plot_df, x="x", y="y", color="cluster", title="Customer / Transaction Segment Map (PCA 2D)")
             fig.update_layout(xaxis_title="PC1", yaxis_title="PC2")
             st.plotly_chart(fig, use_container_width=True)
             st.markdown(
@@ -311,14 +520,15 @@ with tab_cluster:
                     st.caption(f"k dengan silhouette tertinggi: **{best_k}**")
 
         with st.container(border=True):
-            st.markdown("**Profil tiap cluster** (rata-rata fitur numerik)")
+            st.markdown("**Profil tiap segmen** (rata-rata fitur numerik)")
             st.dataframe(cluster_profile, use_container_width=True)
             st.markdown(
-                '<p class="ledger-caption">Ini yang bikin cluster "bisa dibaca" secara bisnis — misal cluster dengan AccountBalance tertinggi bisa jadi target program nasabah prioritas.</p>',
+                '<p class="ledger-caption">Profil segmen membantu membaca karakter nasabah/transaksi secara bisnis, misalnya saldo rata-rata tertinggi dapat menjadi kandidat segmen prioritas.</p>',
                 unsafe_allow_html=True,
             )
 
 with tab_model:
+    st.markdown('<div class="section-kicker">Predictive Model</div><div class="section-title">Random Forest untuk memprediksi target segmentasi</div>', unsafe_allow_html=True)
     if len(filtered) < 20:
         st.info("Perlu minimal 20 baris data setelah filter buat melatih model.")
     else:
@@ -334,7 +544,7 @@ with tab_model:
                 st.markdown("**Confusion matrix**")
                 fig = px.imshow(
                     cm, x=[str(c) for c in classes], y=[str(c) for c in classes],
-                    text_auto=True, color_continuous_scale=["#141F35", ACCENT],
+                    text_auto=True, color_continuous_scale=["#141F35", TEAL],
                     labels=dict(x="Prediksi", y="Aktual", color="Jumlah"),
                 )
                 fig.update_layout(coloraxis_showscale=False)
@@ -344,18 +554,19 @@ with tab_model:
                 st.dataframe(report, use_container_width=True)
 
         with st.container(border=True):
-            st.markdown("**Feature importance**")
+            st.markdown("**Drivers of Banking Behavior**")
             importance_df = get_feature_importance(pipeline)
-            fig = px.bar(importance_df, x="importance", y="feature", orientation="h", title="Top 15 fitur paling berpengaruh")
+            fig = px.bar(importance_df, x="importance", y="feature", orientation="h", title="Top 15 drivers")
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
             st.plotly_chart(fig, use_container_width=True)
 
 with tab_whatif:
+    st.markdown('<div class="section-kicker">Decision Simulator</div><div class="section-title">Simulasikan transaksi baru dan lihat prediksi model</div>', unsafe_allow_html=True)
     if len(filtered) < 20:
         st.info("Perlu minimal 20 baris data setelah filter buat melatih model prediksi.")
     else:
         pipeline, *_ = train_classifier(filtered)
-        st.write("Masukkan data transaksi buat lihat prediksi model secara langsung.")
+        st.write("Masukkan karakteristik transaksi untuk melihat segmentasi / target yang diprediksi model.")
         with st.form("whatif_form"):
             wc1, wc2 = st.columns(2)
             with wc1:
@@ -392,15 +603,16 @@ with tab_whatif:
             proba_df = pd.DataFrame({"target": classes, "probability": proba}).sort_values("probability", ascending=True)
 
             with st.container(border=True):
-                st.success(f"Prediksi Target: **{pred}**")
+                st.markdown(f'<div class="prediction-card"><div class="prediction-label">Predicted Banking Segment</div><div class="prediction-value"><span>{pred}</span></div></div>', unsafe_allow_html=True)
                 fig = px.bar(
                     proba_df, x="probability", y="target", orientation="h",
                     title="Probabilitas tiap kelas", range_x=[0, 1],
                 )
-                fig.update_traces(marker_color=[ACCENT if t == pred else SURFACE_BORDER for t in proba_df["target"]])
+                fig.update_traces(marker_color=[TEAL if t == pred else SURFACE_BORDER for t in proba_df["target"]])
                 st.plotly_chart(fig, use_container_width=True)
 
 with tab_data:
+    st.markdown('<div class="section-kicker">Data Ledger</div><div class="section-title">Data transaksi yang sedang dianalisis</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.dataframe(filtered.head(250), use_container_width=True)
         st.download_button(
