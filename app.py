@@ -17,8 +17,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 APP_DIR = Path(__file__).resolve().parent
-DATA_DIR = APP_DIR / "data"
-DATA_FILE = DATA_DIR / "data_clustering.csv"
 
 NUM_COLS = ["TransactionAmount", "CustomerAge", "TransactionDuration", "LoginAttempts", "AccountBalance"]
 CAT_COLS = ["TransactionType", "Location", "Channel", "CustomerOccupation"]
@@ -293,6 +291,45 @@ def register_plotly_theme() -> None:
 
 
 # ========== DATA & MODEL (cached) ==========
+def resolve_data_file() -> Path:
+    """Find the dashboard dataset without depending on any machine-specific path."""
+    candidates = [
+        APP_DIR / "data" / "data_clustering.csv",
+        APP_DIR / "data" / "bank_transactions_dashboard.csv",
+        APP_DIR / "data" / "bank_transactions_data.csv",
+        APP_DIR / "data_clustering.csv",
+        APP_DIR / "bank_transactions_dashboard.csv",
+        APP_DIR / "bank_transactions_data.csv",
+    ]
+
+    # Prefer known filenames so a generated/exported CSV is not accidentally selected.
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+
+    # Last-resort discovery for simple GitHub/Streamlit layouts.
+    preferred_names = {
+        "data_clustering.csv",
+        "bank_transactions_dashboard.csv",
+        "bank_transactions_data.csv",
+    }
+    discovered = sorted(
+        (p for p in APP_DIR.rglob("*.csv") if p.name in preferred_names and p.is_file()),
+        key=lambda p: (p.name != "data_clustering.csv", len(p.parts)),
+    )
+    if discovered:
+        return discovered[0]
+
+    raise FileNotFoundError(
+        "Dataset tidak ditemukan. Letakkan salah satu file berikut di folder project "
+        "atau folder data/: data_clustering.csv, bank_transactions_dashboard.csv, "
+        "atau bank_transactions_data.csv."
+    )
+
+
+DATA_FILE = resolve_data_file()
+
+
 def one_hot():
     try:
         return OneHotEncoder(handle_unknown="ignore", sparse_output=False)
@@ -302,7 +339,14 @@ def one_hot():
 
 @st.cache_data(show_spinner="Memuat data...")
 def load_data() -> pd.DataFrame:
-    return pd.read_csv(DATA_FILE)
+    df = pd.read_csv(DATA_FILE)
+    required = set(NUM_COLS + CAT_COLS + ["Target"])
+    missing = sorted(required.difference(df.columns))
+    if missing:
+        raise ValueError(
+            f"Dataset '{DATA_FILE.name}' belum memiliki kolom yang dibutuhkan: {', '.join(missing)}"
+        )
+    return df
 
 
 @st.cache_data(show_spinner=False)
@@ -414,11 +458,15 @@ with st.expander("Tentang dashboard ini"):
         """
     )
 
-if not DATA_FILE.exists():
-    st.warning("Dataset belum ada. Taruh `data_clustering.csv` di dalam folder `data/`.")
+try:
+    df = load_data()
+except (FileNotFoundError, ValueError) as exc:
+    st.error(str(exc))
+    st.info(
+        "Tidak perlu mengubah kode dashboard. Cukup pastikan CSV dataset yang sudah ada di repository "
+        "berada di folder `data/` atau di folder yang sama dengan `app.py`."
+    )
     st.stop()
-
-df = load_data()
 
 with st.sidebar.form("filter_form"):
     st.markdown('<div class="sidebar-bank-label">Portfolio & Transaction Filter</div>', unsafe_allow_html=True)
